@@ -39,6 +39,22 @@ mosquitto_sub -h localhost -t "AndroidKotlinMapboxMoveMapComplete" | while read 
 
 ###iOS Swift
 
+##General
+
+#inAppAlert iOSSwiftInAppAlertReceive
+sh mosquitto_inappalert_generator.sh 100 iOSSwiftInAppAlertReceive 2
+
+mosquitto_sub -h localhost -t "iOSSwiftInAppAlertComplete" | while read line; do echo "$line,$(gdate +%s%3N)"; done > iOSSwiftInAppAlert.csv
+
+
+
+#inAppNotification iOSSwiftInAppNotificationReceive
+sh mosquitto_inappnotification_generator.sh 100 iOSSwiftInAppNotificationReceive 2
+
+mosquitto_sub -h localhost -t "iOSSwiftInAppNotificationComplete" | while read line; do echo "$line,$(gdate +%s%3N)"; done > iOSSwiftInAppNotification.csv
+
+
+
 ##Apple Maps
 
 #drawPoint
