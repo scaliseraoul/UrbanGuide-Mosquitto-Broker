@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Mosquitto Marker Generator
+# Mosquitto MoveMap Generator
 
 # Configuration
 center_lat=44.646469 #Modena
 center_lon=10.925139 
-radius=500
+radius=10000
 
 
 # Function to generate a random float between two values
@@ -21,7 +21,7 @@ publish_message() {
     local lat=$(random_float $(echo "$center_lat - ($radius/111111)" | bc -l) $(echo "$center_lat + ($radius/111111)" | bc -l))
     local lon=$(random_float $(echo "$center_lon - ($radius/(111111 * cos($center_lat * 3.14159 / 180)))" | bc -l) $(echo "$center_lon + ($radius/(111111 * cos($center_lat * 3.14159 / 180)))" | bc -l))
     local timestamp=$(gdate +%s%3N)
-    local message="{\"lat\":$lat,\"lang\":$lon,\"title\":\"Monumento $timestamp\",\"category\":\"Monuments\",\"timestamp\":\"$timestamp\"}"
+    local message="{\"lat\":$lat,\"lang\":$lon,\"timestamp\":\"$timestamp\"}"
     mosquitto_pub -h 127.0.0.1 -t "$1" -m "$message"
     echo "Published: $message"
 }
@@ -33,7 +33,7 @@ topic=$2
 interval=$3
 counter=0
 
-if [[ -z "$max_messages" || -z "$topic" ]]; then
+if [[ -z "$max_messages" || -z "$topic" || -z "$interval" ]]; then
     echo "Usage: $0 <max_messages> <topic> <interval_ms>? "
     exit 1
 fi
@@ -43,9 +43,7 @@ while true; do
     if [[ $counter -lt $max_messages ]]; then
         publish_message $topic
         ((counter++))
-        if [ ! -z "$interval" ]; then
-            sleep $(echo "$interval" | bc -l)
-        fi
+        sleep $(echo "$interval" | bc -l)
     else
         break
     fi
