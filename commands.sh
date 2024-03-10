@@ -10,6 +10,19 @@ sh mosquitto_marker_generator.sh 100 test
 
 ###Android Kotlin
 
+##General
+
+#inAppAlert AndroidKotlinInAppAlertReceive
+sh mosquitto_inappalert_generator.sh 100 AndroidKotlinInAppAlertReceive 2
+
+mosquitto_sub -h localhost -t "AndroidKotlinInAppAlertComplete" | while read line; do echo "$line,$(gdate +%s%3N)"; done > AndroidKotlinInAppAlert.csv
+
+#inAppNotification AndroidKotlinInAppNotificationReceive
+sh mosquitto_inappnotification_generator.sh 100 AndroidKotlinInAppNotificationReceive 2
+
+mosquitto_sub -h localhost -t "AndroidKotlinInAppNotificationComplete" | while read line; do echo "$line,$(gdate +%s%3N)"; done > AndroidKotlinInAppNotification.csv
+
+
 ##GoogleMaps
 
 #drawPoint
@@ -45,8 +58,6 @@ mosquitto_sub -h localhost -t "AndroidKotlinMapboxMoveMapComplete" | while read 
 sh mosquitto_inappalert_generator.sh 100 iOSSwiftInAppAlertReceive 2
 
 mosquitto_sub -h localhost -t "iOSSwiftInAppAlertComplete" | while read line; do echo "$line,$(gdate +%s%3N)"; done > iOSSwiftInAppAlert.csv
-
-
 
 #inAppNotification iOSSwiftInAppNotificationReceive
 sh mosquitto_inappnotification_generator.sh 100 iOSSwiftInAppNotificationReceive 2
