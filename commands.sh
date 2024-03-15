@@ -1,8 +1,13 @@
 ###Analysis
 python scripts/moving_average.py data/drawpoint/*.csv
 python scripts/moving_average.py data/movemap/*.csv
+python scripts/moving_average.py data/inappalert/*.csv
+python scripts/moving_average.py data/inappanotification/*.csv
+
 python scripts/boxplot_elapsed.py data/drawpoint/*.csv
 python scripts/boxplot_elapsed.py data/movemap/*.csv
+python scripts/boxplot_elapsed.py data/inappalert/*.csv
+python scripts/boxplot_elapsed.py data/inappanotification/*.csv
 
 ###DrawPoint
 sh tester.sh AndroidKotlinGoogleMaps DrawPoint
