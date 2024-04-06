@@ -7,6 +7,7 @@ fi
 
 TOPIC=$1
 EVENT_TYPE=$2
+BATCH_SIZE=${3:-1}
 FILE=""
 INTERVAL=2
 
@@ -25,6 +26,10 @@ case $EVENT_TYPE in
     echo "Handling DrawPoint for topic $TOPIC$EVENT_TYPE"
     FILE="mosquitto_drawpoint_generator.sh"
     ;;
+  DrawPointBatch)
+    echo "Handling DrawPoint for topic $TOPIC$EVENT_TYPE"
+    FILE="mosquitto_drawpoint_generator.sh"
+    ;;
   MoveMap)
     echo "Handling MoveMap for topic $TOPIC$EVENT_TYPE"
     FILE="mosquitto_movemap_generator.sh"
@@ -35,11 +40,11 @@ case $EVENT_TYPE in
     ;;
 esac
 
-echo "Generating 1 event every $INTERVAL seconds"
+echo "Generating $BATCH_SIZE events every $INTERVAL seconds"
 
 BACKUP_DIR="backup"
-FILE_PATH="${TOPIC}${EVENT_TYPE}.csv"
-BACKUP_FILE="${BACKUP_DIR}/${TOPIC}${EVENT_TYPE}_$(gdate +%s).csv"
+FILE_PATH="${TOPIC}${EVENT_TYPE}${BATCH_SIZE}.csv"
+BACKUP_FILE="${BACKUP_DIR}/${TOPIC}${EVENT_TYPE}${BATCH_SIZE}_$(gdate +%s).csv"
 
 if [ -f "$FILE_PATH" ]; then
   mkdir -p "$BACKUP_DIR"
@@ -50,6 +55,6 @@ echo "TIMESTAMP_SENT,OS,LANGUAGE,MAP,EVENT,CONF,LATENCY,ELAPSED_TIME,TIMESTAMP_R
 mosquitto_sub -h localhost -t "${TOPIC}${EVENT_TYPE}Complete" | while read line; do echo "$line,$(gdate +%s%3N)"; done >> $FILE_PATH &
 
 
-sh $FILE 100 ${TOPIC}${EVENT_TYPE}Receive $INTERVAL
+sh $FILE 100 ${TOPIC}${EVENT_TYPE}Receive $INTERVAL $BATCH_SIZE
 
 exit 0

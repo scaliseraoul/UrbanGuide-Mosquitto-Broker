@@ -14,39 +14,40 @@ def create_combined_line_graph_with_moving_average(file_paths, output_dir, windo
 
     for file_path in file_paths:
         try:
-            # Load the CSV file without using the first column as the index
+            # Load the CSV file
             data = pd.read_csv(file_path, header=0)
-            if data.shape[1] < 8:
-                print(f"{file_path} does not contain 8 columns.")
+            if 'TIMESTAMP_RECEIVED' not in data.columns or 'TIMESTAMP_SENT' not in data.columns:
+                print(f"{file_path} does not contain 'TIMESTAMP_RECEIVED' and 'TIMESTAMP_SENT' columns.")
                 continue
 
-            # Select the 8th column as the series to plot
-            series = data.iloc[:, 7].dropna() / 1_000_000_000
+            # Calculate the total elapsed time in seconds
+            data['Total_Elapsed_Time'] = (data['TIMESTAMP_RECEIVED'] - data['TIMESTAMP_SENT'])
 
-            # Calculate moving average
-            moving_avg = calculate_moving_average(series, window)
+            # Calculate moving average for the total elapsed time
+            moving_avg = calculate_moving_average(data['Total_Elapsed_Time'], window)
 
-            # Plotting the original series and its moving average
-            # plt.plot(series.index, series, label=f'Original - {os.path.basename(file_path)}', linestyle='-')
-            plt.plot(moving_avg.index, moving_avg, label=f'Moving Average - {os.path.basename(file_path)}', linestyle='-')
-        
+            # Plotting the moving average of the total elapsed time
+            name=os.path.basename(file_path).replace('.csv', '')
+            plt.plot(moving_avg.index, moving_avg, label=f'Moving Average - {name}', linestyle='-')
+
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
 
-    plt.title("Combined Line Graph with Moving Averages")
+    plt.title("Moving Averages of Total Elapsed Time")
     plt.xlabel('Events')
-    plt.ylabel('Seconds')
+    plt.ylabel('Milliseconds')
     plt.legend()
     plt.tight_layout()
 
     # Save the combined plot
-    plt.savefig(os.path.join(output_dir, 'combined_line_graph_with_moving_averages.png'))
+    name=os.path.basename(file_paths[0]).replace('.csv', '')
+    plt.savefig(os.path.join(output_dir, f'{name}_moving_average_total_elapsed.png'))
     plt.close()
 
 def main(file_paths):
     # Create output directory with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    output_dir = f"graphics-timeline-{timestamp}"
+    timestamp = datetime.now().strftime("%Y%m%d")
+    output_dir = f"Moving Average Total Elapsed {timestamp}"
     os.makedirs(output_dir, exist_ok=True)
 
     # Generate combined line graph with moving averages
