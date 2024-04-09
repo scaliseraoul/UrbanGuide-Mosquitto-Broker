@@ -20,8 +20,10 @@ python scripts/boxplot_total_elapsed.py data/inappalert/*.csv
 python scripts/boxplot_total_elapsed.py data/inappnotification/*.csv
 
 python scripts/analyzer.py data/drawpoint/*.csv
+python scripts/analyzer.py data/drawpointbatch/*.csv
 python scripts/analyzer.py data/movemap/*.csv
 python scripts/analyzer.py data/inappalert/*.csv
+python scripts/analyzer.py data/inappalertbatch/*.csv
 python scripts/analyzer.py data/inappnotification/*.csv
 
 ###DrawPoint
